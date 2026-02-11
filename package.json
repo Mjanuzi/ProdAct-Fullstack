@@ -8,8 +8,8 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/index.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "lint": "eslint \"src/**/*.{ts,tsx}\"",
-    "lint:fix": "eslint \"src/**/*.{ts,tsx}\" --fix",
+    "lint": "eslint \"**/*.ts\" --ignore-pattern dist/** --ignore-pattern node_modules/**",
+    "lint:fix": "eslint \"**/*.ts\" --ignore-pattern dist/** --ignore-pattern node_modules/** --fix",
     "ci:check": "npm run typecheck && npm run lint"
   },
   "dependencies": {
