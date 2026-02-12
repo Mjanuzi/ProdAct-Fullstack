@@ -50,7 +50,7 @@ model Product {
   // Active/inactive product
   isActive Boolean @default(true)
 
-  //Meta data
+  //Metadata
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
