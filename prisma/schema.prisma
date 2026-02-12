@@ -47,7 +47,7 @@ model Product {
   categoryId Int?
   category   Category? @relation(fields: [categoryId], references: [id])
 
-  // Activ/inactiv product
+  // Active/inactive product
   isActive Boolean @default(true)
 
   //Meta data
