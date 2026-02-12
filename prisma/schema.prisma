@@ -11,5 +11,126 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url = env("DATABASE_URL") 
+}
+
+//------------ENUM-------------------
+enum Role {
+  USER
+  ADMIN
+}
+
+//------------CATEGORY------------
+model Category {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  products Product[]
+
+  @@map("categories")
+}
+
+//-----------Product---------------
+model Product {
+  id Int @id @default(autoincrement())
+
+  /// EAN barcode
+  ean String @unique
+
+  /// Extern from OpenFoodFacts (if you want to save this)
+  openFoodFactsId String? @db.Text
+
+  name        String
+  brand       String?
+  description String?
+
+  //FK to Category
+  categoryId Int?
+  category   Category? @relation(fields: [categoryId], references: [id])
+
+  // Activ/inactiv product
+  isActive Boolean @default(true)
+
+  //Meta data
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  location ProductLocation[]
+
+  @@index([categoryId])
+  @@map("products")
+}
+
+//---------------------Aisle---------------
+model Aisle {
+  id   Int    @id @default(autoincrement())
+  name String
+  code String
+
+  section Section[]
+
+  @@map("aisle")
+}
+
+//-----------Section-----------------
+model Section {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  //FK to Aisle
+  aisleId Int
+  aisle   Aisle @relation(fields: [aisleId], references: [id])
+
+  shelves Shelf[]
+
+  @@index([aisleId])
+  @@map("section")
+}
+
+//---------Shelf-----------
+model Shelf {
+  id Int @id @default(autoincrement())
+
+  //Fk to Section
+  sectionId Int
+  section   Section @relation(fields: [sectionId], references: [id])
+
+  level    Int
+  position Int?
+
+  products ProductLocation[]
+
+  @@index([sectionId])
+  @@map("shelves")
+}
+
+model ProductLocation {
+  id Int @id @default(autoincrement())
+
+  //Fk till product
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+
+  //FK to shelf
+  shelfId Int
+  shelf   Shelf @relation(fields: [shelfId], references: [id])
+
+  position Int?
+
+  @@index([productId])
+  @@index([shelfId])
+  @@map("product_location")
+}
+
+//-----User/Admin-------------
+model User {
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  password String
+
+  role Role @default(USER)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
 }
