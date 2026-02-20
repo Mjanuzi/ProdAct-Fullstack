@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { prisma } from "./lib/prisma";
+import { fetchProductByEan } from "./services/OpenFoodFacts";
 
 const app = express();
 const port = process.env.PORT ?? 3001;
@@ -143,6 +144,36 @@ app.get("/api/products/:id", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+//Add new product for admin user and route, Get product from Open Food Facts API
+app.post("/api/products", async (req,res) => {
+  try {
+    const {ean, shelfId} = req.body as {ean?: string; shelfId?: number};
+
+    if (!ean || typeof ean !== "string" || !ean.trim()) {
+      res.status(400).json({ error: "EAN is required" });
+      return;
+    }
+
+    const normalizedEan = ean.trim().replace(/\s/g,"");
+    if (normalizedEan.length < 8) {
+      res.status(400).json({ error: "Invalid EAN" });
+      return;
+    }
+
+    //if it already exist in out database
+    const existing = await prisma.product.findUnique({
+      where: {ean: normalizedEan},
+    });
+    if (existing) {
+      res.status(409).json({
+        error: "Product already exists",
+        productId: existing.id,
+      });
+      return;
+    }
+  }
+})
 
 app.listen(port, () => {
   console.log(`Backend listening on http://localhost:${port}`);
