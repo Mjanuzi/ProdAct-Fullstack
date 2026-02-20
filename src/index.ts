@@ -75,7 +75,74 @@ app.get("/api/products", async (req, res) => {
   }
 });
 
-//
+//Get ONE product with placement open for everyone
+app.get("/api/products/:id", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (Number.isNaN(id)) {
+      res.status(400).json({ error: "Invalid id" });
+    }
+
+    const product = await prisma.product.findUnique({
+      where: { id },
+      include: {
+        category: true,
+        locations: {
+          include: {
+            shelf: {
+              include: {
+                section: {
+                  include: {
+                    aisle: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!product) {
+      res.status(404).json({ error: "Did not find product" });
+      return;
+    }
+
+    //Formation on placement as (Mejeri -> Gång 5 -> Hylla 3)
+    const formattedLocations = product.locations.map((location) => {
+      const aisle = location.shelf.section.aisle.name;
+      const section = location.shelf.section.name;
+      const shelfLevel = location.shelf.level;
+      const position = location.position ? `Position ${location.position}` : "";
+
+      return {
+        id: location.id,
+        //Here is the format
+        display: `${section} -> ${aisle} -> Hylla ${shelfLevel}${position}`,
+        aisle: aisle,
+        section: section,
+        shelfLevel: shelfLevel,
+        position: position,
+      };
+    });
+
+    res.json({
+      id: product.id,
+      ean: product.ean,
+      name: product.name,
+      brand: product.brand,
+      description: product.description,
+      category: product.category?.name || null,
+      openFoodFactsId: product.openFoodFactsId,
+      locations: formattedLocations,
+      createdAt: product.createdAt,
+      updatedAt: product.updatedAt,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 app.listen(port, () => {
   console.log(`Backend listening on http://localhost:${port}`);
