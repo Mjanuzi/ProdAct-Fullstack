@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
 import { prisma } from "./lib/prisma";
-import { error } from "node:console";
 
 const app = express();
 const port = process.env.PORT ?? 3001;
@@ -20,41 +19,63 @@ app.get("/health", async (_req, res) => {
   }
 });
 
-//List all Categories
-app.get("/api/categories", async (_req, res) => {
+//Products for everyone to see
+app.get("/api/products", async (req, res) => {
   try {
-    const categories = await prisma.category.findMany({
-      orderBy: { name: "asc" },
+    const searchQuery = req.query.q as string | undefined;
+
+    //if no input return an empty list or error message
+    if (!searchQuery || searchQuery.trim() === "") {
+      res.json({
+        products: [],
+        message: "Insert a serach word",
+      });
+      return;
+    }
+    //serach name or brand, case insensitive, partial match
+    const products = await prisma.product.findMany({
+      where: {
+        isActive: true,
+        OR: [
+          {
+            name: {
+              contains: searchQuery.trim(),
+              mode: "insensitive",
+            },
+          },
+          {
+            brand: {
+              contains: searchQuery.trim(),
+              mode: "insensitive",
+            },
+          },
+        ],
+      },
+      include: {
+        category: true,
+      },
+      orderBy: {
+        name: "asc",
+      },
+      take: 20, //max 20 results
     });
-    res.json(categories);
+
+    //if no result error message
+    if (products.length === 0) {
+      res.json({
+        products: [],
+        message: `Could not find "${searchQuery}". Please check spelling or try another word.`,
+      });
+      return;
+    }
+    res.json({ products });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Internal server error" });
+    console.log(err);
+    res.status(500).json({ error: "Intern server error" });
   }
 });
 
-//get ONE category
-app.get("/api/categories/:id", async (req, res) => {
-  try {
-    const id = Number(req.params.id);
-    if (Number.isNaN(id)) {
-      res.status(400).json({ error: "Invalid id" });
-      return;
-    }
-    const category = await prisma.category.findUnique({
-      where: { id },
-      include: { products: true },
-    });
-    if (!category) {
-      res.status(404).json({ error: "Not Found" });
-      return;
-    }
-    res.json(category);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
+//
 
 app.listen(port, () => {
   console.log(`Backend listening on http://localhost:${port}`);
