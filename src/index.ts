@@ -146,16 +146,16 @@ app.get("/api/products/:id", async (req, res) => {
 });
 
 //Add new product for admin user and route, Get product from Open Food Facts API
-app.post("/api/products", async (req,res) => {
+app.post("/api/products", async (req, res) => {
   try {
-    const {ean, shelfId} = req.body as {ean?: string; shelfId?: number};
+    const { ean, shelfId } = req.body as { ean?: string; shelfId?: number };
 
     if (!ean || typeof ean !== "string" || !ean.trim()) {
       res.status(400).json({ error: "EAN is required" });
       return;
     }
 
-    const normalizedEan = ean.trim().replace(/\s/g,"");
+    const normalizedEan = ean.trim().replace(/\s/g, "");
     if (normalizedEan.length < 8) {
       res.status(400).json({ error: "Invalid EAN" });
       return;
@@ -163,7 +163,7 @@ app.post("/api/products", async (req,res) => {
 
     //if it already exist in out database
     const existing = await prisma.product.findUnique({
-      where: {ean: normalizedEan},
+      where: { ean: normalizedEan },
     });
     if (existing) {
       res.status(409).json({
@@ -172,8 +172,77 @@ app.post("/api/products", async (req,res) => {
       });
       return;
     }
+
+    const offProduct = await fetchProductByEan(normalizedEan);
+
+    if (!offProduct) {
+      res.status(404).json({
+        error:
+          "Could not find product in Open Food Facts, please check the EAN",
+      });
+      return;
+    }
+
+    const name = offProduct.name;
+    const brand = offProduct.brand;
+    const description = offProduct.description;
+    const categoryName = offProduct.categoryName;
+
+    //Create or find a catagory
+    let category = await prisma.category.findFirst({
+      where: { name: categoryName },
+    });
+    if (!category) {
+      category = await prisma.category.create({
+        data: { name: categoryName },
+      });
+    }
+
+    //Create product
+    const product = await prisma.product.create({
+      data: {
+        ean: normalizedEan,
+        openFoodFactsId: offProduct.openFoodFactsId,
+        name,
+        brand,
+        description,
+        categoryId: category.id,
+      },
+    });
+
+    //Placement if shelfsId is provided
+    if (shelfId != null && Number.isInteger(shelfId)) {
+      await prisma.productLocation.create({
+        data: {
+          productId: product.id,
+          shelfId,
+          position: null,
+        },
+      });
+    }
+
+    const productWithLocation = await prisma.product.findUnique({
+      where: { id: product.id },
+      include: {
+        category: true,
+        locations: {
+          include: {
+            shelf: {
+              include: {
+                section: { include: { aisle: true } },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    res.status(201).json(productWithLocation);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Internal server error" });
   }
-})
+});
 
 app.listen(port, () => {
   console.log(`Backend listening on http://localhost:${port}`);
