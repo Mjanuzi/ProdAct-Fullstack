@@ -28,6 +28,20 @@ app.use(
 );
 app.use(express.json());
 
+function requireAdmin(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction,
+) {
+  const s = req.session as { userId?: number; role?: string };
+
+  if (!s.userId || s.role !== "ADMIN") {
+    res.status(401).json({ error: "Require Admin Access" });
+    return;
+  }
+  next();
+}
+
 //Healthcheck
 app.get("/health", async (_req, res) => {
   try {
@@ -37,6 +51,65 @@ app.get("/health", async (_req, res) => {
     console.error(err);
     res.status(500).json({ ok: false });
   }
+});
+
+//Admin login
+app.post("/api/auth/login", async (req, res) => {
+  try {
+    const { email, password } = req.body as {
+      email?: string;
+      password?: string;
+    };
+
+    if (
+      !email ||
+      !password ||
+      typeof email !== "string" ||
+      typeof password !== "string"
+    ) {
+      res.status(400).json({ error: "Email och lösenord krävs" });
+      return;
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: email.trim() },
+    });
+
+    if (!user) {
+      res.status(401).json({ error: "Fel email eller lösenord" });
+      return;
+    }
+
+    const ok = await bcrypt.compare(password, user.password);
+    if (!ok) {
+      res.status(401).json({ error: "Fel email eller lösenord" });
+      return;
+    }
+
+    const s = req.session as { userId?: number; role?: string };
+    s.userId = user.id;
+    s.role = user.role;
+
+    res.json({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+//Admin logout
+app.post("/api/auth/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      res.status(500).json({ error: "Internal server error" });
+      return;
+    }
+    res.status(204).end();
+  });
 });
 
 //Products for everyone to see
@@ -165,7 +238,7 @@ app.get("/api/products/:id", async (req, res) => {
 });
 
 //Add new product for admin user and route, Get product from Open Food Facts API
-app.post("/api/products", async (req, res) => {
+app.post("/api/admin/products", requireAdmin, async (req, res) => {
   try {
     const { ean, shelfId } = req.body as { ean?: string; shelfId?: number };
 
