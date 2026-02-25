@@ -2,11 +2,30 @@ import express from "express";
 import cors from "cors";
 import { prisma } from "./lib/prisma";
 import { fetchProductByEan } from "./services/OpenFoodFacts";
+import session from "express-session";
+import bcrypt from "bcrypt";
 
 const app = express();
 const port = process.env.PORT ?? 3001;
 
-app.use(cors());
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET ?? "dev-secret-change-in-production",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, //24h
+    },
+  }),
+);
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }),
+);
 app.use(express.json());
 
 //Healthcheck
