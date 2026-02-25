@@ -4,6 +4,7 @@ import { prisma } from "./lib/prisma";
 import { fetchProductByEan } from "./services/OpenFoodFacts";
 import session from "express-session";
 import bcrypt from "bcrypt";
+import type { Prisma } from "@prisma/client";
 
 const app = express();
 const port = process.env.PORT ?? 3001;
@@ -332,6 +333,81 @@ app.post("/api/admin/products", requireAdmin, async (req, res) => {
     res.status(201).json(productWithLocation);
   } catch (err) {
     console.log(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+//Admin route - Update a product
+app.put("/api/admin/products/:id", requireAdmin, async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (Number.isNaN(id)) {
+      res.status(400).json({ error: "Invalid id" });
+      return;
+    }
+
+    const { name, brand, description, categoryId } = req.body as {
+      name?: string;
+      brand?: string;
+      description?: string;
+      categoryId?: number;
+    };
+
+    // Bygg upp vilka fält som faktiskt ska uppdateras
+    const data: Prisma.ProductUpdateInput = {};
+
+    if (typeof name === "string" && name.trim()) {
+      data.name = name.trim();
+    }
+    if (typeof brand === "string") {
+      data.brand = brand.trim();
+    }
+    if (typeof description === "string") {
+      data.description = description.trim();
+    }
+
+    // Om categoryId skickas: verifiera att kategorin finns
+    if (categoryId != null) {
+      const catId = Number(categoryId);
+      if (Number.isNaN(catId)) {
+        res.status(400).json({ error: "Invalid categoryId" });
+        return;
+      }
+      const category = await prisma.category.findUnique({
+        where: { id: catId },
+      });
+      if (!category) {
+        res.status(400).json({ error: "Category not found" });
+        return;
+      }
+      data.category = { connect: { id: category.id } };
+    }
+
+    if (Object.keys(data).length === 0) {
+      res.status(400).json({ error: "No fields to update" });
+      return;
+    }
+
+    const updated = await prisma.product.update({
+      where: { id },
+      data,
+      include: {
+        category: true,
+        locations: {
+          include: {
+            shelf: {
+              include: {
+                section: { include: { aisle: true } },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    res.json(updated);
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ error: "Internal server error" });
   }
 });
