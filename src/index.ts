@@ -412,6 +412,41 @@ app.put("/api/admin/products/:id", requireAdmin, async (req, res) => {
   }
 });
 
+app.delete("/api/admin/products/:id", requireAdmin, async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (Number.isNaN(id)) {
+      res.status(400).json({ error: "Invalid id" });
+      return;
+    }
+
+    //Existing product?
+    const product = await prisma.product.findUnique({
+      where: { id },
+    });
+
+    if (!product) {
+      res.status(404).json({ error: "Product not found" });
+      return;
+    }
+
+    //Delete placement in store first
+    await prisma.productLocation.deleteMany({
+      where: { productId: id },
+    });
+
+    //Delete the product
+    await prisma.product.delete({
+      where: { id },
+    });
+
+    res.status(204).end();
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Backend listening on http://localhost:${port}`);
 });
