@@ -447,6 +447,88 @@ app.delete("/api/admin/products/:id", requireAdmin, async (req, res) => {
   }
 });
 
+app.put("/api/admin/products/:id/locations", requireAdmin, async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (Number.isNaN(id)) {
+      res.status(400).json({ error: "Invalid id" });
+      return;
+    }
+    const { locations } = req.body as {
+      locations?: { shelfId: number; position?: number }[];
+    };
+    if (!Array.isArray(locations) || locations.length === 0) {
+      res
+        .status(400)
+        .json({ error: "locations needs to be a non empty array" });
+      return;
+    }
+    // Finns produkten?
+    const product = await prisma.product.findUnique({
+      where: { id },
+    });
+    if (!product) {
+      res.status(404).json({ error: "Product not found" });
+      return;
+    }
+    // Validera alla shelfId
+    const shelfIds = locations.map((loc) => Number(loc.shelfId));
+    if (shelfIds.some((sid) => Number.isNaN(sid))) {
+      res.status(400).json({ error: "Invalid shelfId in locations" });
+      return;
+    }
+    const distinctShelfIds = Array.from(new Set(shelfIds));
+    const shelves = await prisma.shelf.findMany({
+      where: { id: { in: distinctShelfIds } },
+      select: { id: true },
+    });
+    const existingShelfIds = new Set(shelves.map((s) => s.id));
+    const missing = distinctShelfIds.filter(
+      (sid) => !existingShelfIds.has(sid),
+    );
+    if (missing.length > 0) {
+      res.status(400).json({
+        error: "Following shelfId does not exist",
+        missingShelfIds: missing,
+      });
+      return;
+    }
+    // Ersätt alla gamla placeringar med nya
+    await prisma.$transaction([
+      prisma.productLocation.deleteMany({
+        where: { productId: id },
+      }),
+      prisma.productLocation.createMany({
+        data: locations.map((loc) => ({
+          productId: id,
+          shelfId: Number(loc.shelfId),
+          position: typeof loc.position === "number" ? loc.position : null,
+        })),
+      }),
+    ]);
+    // Hämta produkten med uppdaterade placeringar
+    const updated = await prisma.product.findUnique({
+      where: { id },
+      include: {
+        category: true,
+        locations: {
+          include: {
+            shelf: {
+              include: {
+                section: { include: { aisle: true } },
+              },
+            },
+          },
+        },
+      },
+    });
+    res.json(updated);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Backend listening on http://localhost:${port}`);
 });
