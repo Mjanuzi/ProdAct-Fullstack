@@ -104,7 +104,7 @@ app.post("/api/auth/login", async (req, res) => {
 
 //Admin logout
 app.post("/api/auth/logout", (req, res) => {
-  req.session.destroy((err) => {
+  req.session.destroy((err: unknown) => {
     if (err) {
       res.status(500).json({ error: "Internal server error" });
       return;
