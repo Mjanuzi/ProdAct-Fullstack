@@ -1,16 +1,22 @@
 import { PrismaClient, Role } from "@prisma/client";
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 import "dotenv/config";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  //choose admin accout here
+  const adminEmail = process.env.ADMIN_EMAIL ?? "admin@example.com";
 
-  const adminEmail = "admin@example.com";
-  const adminPassword = "Admin123!";
+  let adminPassword = process.env.ADMIN_PASSWORD;
+  let passwordWasGenerated = false;
+  if (!adminPassword) {
+    adminPassword = crypto.randomBytes(16).toString("hex");
+    passwordWasGenerated = true;
+  }
 
   console.log("Seeding admin user...");
+  console.log(`  Using email: ${adminEmail}`);
 
   //Already existing?
   const existing = await prisma.user.findUnique({
@@ -39,6 +45,10 @@ async function main() {
   console.log(`  id: ${admin.id}`);
   console.log(`  email: ${admin.email}`);
   console.log(`  role: ${admin.role}`);
+  if (passwordWasGenerated) {
+    console.log(`  password (generated): ${adminPassword}`);
+    console.log("  ⚠  Save this password now — it will not be shown again.");
+  }
 }
 
 main()
