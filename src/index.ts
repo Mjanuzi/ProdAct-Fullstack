@@ -207,7 +207,7 @@ app.get("/api/products/:id", async (req, res) => {
       const aisle = location.shelf.section.aisle.name;
       const section = location.shelf.section.name;
       const shelfLevel = location.shelf.level;
-      const position = location.position ? `Position ${location.position}` : "";
+      const position = location.position != null ? `Position ${location.position}` : "";
 
       return {
         id: location.id,
