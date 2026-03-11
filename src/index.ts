@@ -5,13 +5,26 @@ import { fetchProductByEan } from "./services/OpenFoodFacts";
 import session from "express-session";
 import bcrypt from "bcrypt";
 import type { Prisma } from "@prisma/client";
+import { randomBytes } from "crypto";
 
 const app = express();
+const isProduction = process.env.NODE_ENV === "production";
+const sessionSecretFromEnv = process.env.SESSION_SECRET;
+
+if (!sessionSecretFromEnv && isProduction) {
+  throw new Error(
+    "SESSION_SECRET environment variable must be set when NODE_ENV is 'production'",
+  );
+}
+
+const sessionSecret =
+  sessionSecretFromEnv ?? randomBytes(32).toString("hex");
+
 const port = process.env.PORT ?? 3001;
 
 app.use(
   session({
-    secret: process.env.SESSION_SECRET ?? "dev-secret-change-in-production",
+    secret: sessionSecret,
     resave: false,
     saveUninitialized: false,
     cookie: {
