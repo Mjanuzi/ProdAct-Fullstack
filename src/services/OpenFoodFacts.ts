@@ -22,7 +22,7 @@ interface OffApiProduct {
 }
 
 
-//Get prodict from EAN
+//Get product from EAN
 export async function fetchProductByEan(
     ean: string
 ): Promise<OpenFoodFactsProduct | null> {
@@ -44,7 +44,7 @@ export async function fetchProductByEan(
 
         const product: OffApiProduct = data.product;
 
-        //Category: First cateogry, remove "en:" prefix.
+        //Category: First category, remove "en:" prefix.
         const categoriesStr = product.categories ?? "";
         const firstCategory = categoriesStr.split(",")[0]?.trim() ?? "";
         const categoryName = 
