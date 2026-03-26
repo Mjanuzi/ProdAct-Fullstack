@@ -10,7 +10,7 @@ productsRouter.get("/api/products", async (req, res) => {
     if (!searchQuery || searchQuery.trim() === "") {
       res.json({
         products: [],
-        message: "Insert a serach word",
+        message: "Insert a search word",
       });
       return;
     }
