@@ -96,10 +96,11 @@ productsRouter.get("/api/products/:id", async (req, res) => {
       const shelfLevel = location.shelf.level;
       const position =
         location.position != null ? `Position ${location.position}` : "";
+      const positionDisplaySuffix = position ? ` ${position}` : "";
 
       return {
         id: location.id,
-        display: `${section} -> ${aisle} -> Hylla ${shelfLevel}${position}`,
+        display: `${section} -> ${aisle} -> Hylla ${shelfLevel}${positionDisplaySuffix}`,
         aisle: aisle,
         section: section,
         shelfLevel: shelfLevel,
