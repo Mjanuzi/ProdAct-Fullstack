@@ -53,7 +53,7 @@ productsRouter.get("/api/products", async (req, res) => {
     res.json({ products });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ error: "Intern server error" });
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
