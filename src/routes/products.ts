@@ -121,7 +121,7 @@ productsRouter.get("/api/products/:id", async (req, res) => {
       updatedAt: product.updatedAt,
     });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).json({ error: "Internal server error" });
   }
 });
