@@ -4,7 +4,7 @@ export function requireAdmin(req: Request, res: Response, next: NextFunction) {
   const s = req.session as { userId?: number; role?: string };
 
   if (!s.userId || s.role !== "ADMIN") {
-    res.status(401).json({ error: "Require Admin Access" });
+    res.status(401).json({ error: "Admin access required" });
     return;
   }
 
