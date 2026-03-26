@@ -1,11 +1,12 @@
 const API_BASE_URL = "http://localhost:3001";
 
-//instead of coding fetch("http://localhost:3001/api/products?q=... everywhere, Im making a base url witch is easier for testing and changes
+// Instead of writing fetch("http://localhost:3001/api/products?q=...") everywhere,
+// this base URL makes testing and future changes easier.
 export async function get<T>(path: string): Promise<T> {
   const res = await fetch(`${API_BASE_URL}${path}`);
 
   if (!res.ok) {
-    throw new Error(`Request failed with statis ${res.status}`);
+    throw new Error(`Request failed with status ${res.status}`);
   }
   return res.json() as Promise<T>;
 }
