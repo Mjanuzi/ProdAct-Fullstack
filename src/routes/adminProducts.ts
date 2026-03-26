@@ -95,7 +95,7 @@ adminProductsRouter.post("/api/admin/products", requireAdmin, async (req, res) =
 
     res.status(201).json(productWithLocation);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).json({ error: "Internal server error" });
   }
 });
