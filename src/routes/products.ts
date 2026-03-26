@@ -10,7 +10,7 @@ productsRouter.get("/api/products", async (req, res) => {
     if (!searchQuery || searchQuery.trim() === "") {
       res.json({
         products: [],
-        message: "Insert a serach word",
+        message: "Insert a search word",
       });
       return;
     }
@@ -52,8 +52,8 @@ productsRouter.get("/api/products", async (req, res) => {
 
     res.json({ products });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Intern server error" });
+    console.log(err);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -96,10 +96,11 @@ productsRouter.get("/api/products/:id", async (req, res) => {
       const shelfLevel = location.shelf.level;
       const position =
         location.position != null ? `Position ${location.position}` : "";
+      const positionDisplaySuffix = position ? ` ${position}` : "";
 
       return {
         id: location.id,
-        display: `${section} -> ${aisle} -> Hylla ${shelfLevel}${position}`,
+        display: `${section} -> ${aisle} -> Hylla ${shelfLevel}${positionDisplaySuffix}`,
         aisle: aisle,
         section: section,
         shelfLevel: shelfLevel,
