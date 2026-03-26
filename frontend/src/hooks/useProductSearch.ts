@@ -13,23 +13,18 @@ export function useProductSearch(query: string) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    
-    if (!trimmed) {
-      setResults([]);
-      setMessage(null);
-      setError(null);
-      setLoading(false);
-      return;
-    }
+
+    if (!trimmed) return;
+
     let cancelled = false;
-    setLoading(true);
-    setError(null);
+
     const timer = setTimeout(() => {
+      setLoading(true);
+      setError(null);
       searchProducts(trimmed)
         .then((res) => {
           if (cancelled) return;
           setResults(res.products);
-          // FK 1.4: tydligt meddelande när inga resultat hittas
           if (res.products.length === 0 && res.message) {
             setMessage(res.message);
           } else {
@@ -53,5 +48,12 @@ export function useProductSearch(query: string) {
       clearTimeout(timer);
     };
   }, [trimmed]);
-  return { results, message, loading, error };
+
+  const isEmpty = !trimmed;
+  return {
+    results: isEmpty ? [] : results,
+    message: isEmpty ? null : message,
+    loading: isEmpty ? false : loading,
+    error: isEmpty ? null : error,
+  };
 }
