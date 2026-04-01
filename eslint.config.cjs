@@ -7,8 +7,8 @@ const tsPlugin = require('@typescript-eslint/eslint-plugin');
 /** @type {import('eslint').Linter.FlatConfig[]} */
 module.exports = [
   {
-    files: ['**/*.ts'],
-    ignores: ['dist/**', 'node_modules/**'],
+    files: ['src/**/*.ts', 'scripts/**/*.ts', 'prisma.config.ts'],
+    ignores: ['dist/**', 'node_modules/**', 'frontend/**'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
