@@ -1,4 +1,5 @@
 import type { ProductDto } from "../types/product";
+import { Link } from "react-router-dom";
 
 type Props = {
   results: ProductDto[];
@@ -19,18 +20,13 @@ export function ProductResults({ results, loading, error, message }: Props) {
     return (
       <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
         {results.map((p) => (
-          <li
-            key={p.id}
-            style={{
-              padding: 12,
-              border: "1px solid #ddd",
-              borderRadius: 10,
-              marginBottom: 10,
-            }}
-          >
-            <div style={{ fontWeight: 700 }}>{p.name}</div>
-            {p.brand && <div>{p.brand}</div>}
-            {p.category && <div>Category: {p.category.name}</div>}
+          <li key={p.id}>
+            <Link
+              to={`/products/${p.id}`}
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
+              ...
+            </Link>
           </li>
         ))}
       </ul>
