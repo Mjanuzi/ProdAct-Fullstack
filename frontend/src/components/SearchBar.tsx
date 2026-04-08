@@ -1,4 +1,4 @@
-import styles from "./SearchBar.module.css";
+import styles from "../styles/SearchBar.module.css";
 
 type Props = {
   value: string;

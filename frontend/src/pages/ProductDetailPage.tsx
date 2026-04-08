@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getProductById } from "../api/products";
 import type { ProductDetailResponse } from "../types/product";
-import styles from "./ProductDetailPage.module.css";
+import styles from "../styles/ProductDetailPage.module.css";
 
 export function ProductDetailPage() {
   const { id } = useParams();

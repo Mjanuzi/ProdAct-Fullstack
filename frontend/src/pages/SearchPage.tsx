@@ -2,7 +2,7 @@ import { useState } from "react";
 import { SearchBar } from "../components/SearchBar";
 import { ProductResults } from "../components/ProductResults";
 import { useProductSearch } from "../hooks/useProductSearch";
-import styles from "./SearchPage.module.css";
+import styles from "../styles/SearchPage.module.css";
 
 export function SearchPage() {
   const [query, setQuery] = useState("");

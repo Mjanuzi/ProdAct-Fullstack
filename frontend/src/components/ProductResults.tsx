@@ -1,6 +1,6 @@
 import type { ProductDto } from "../types/product";
 import { Link } from "react-router-dom";
-import styles from "./ProductResults.module.css";
+import styles from "../styles/ProductResults.module.css";
 
 type Props = {
   results: ProductDto[];
