@@ -2,23 +2,34 @@ import { useState } from "react";
 import { SearchBar } from "../components/SearchBar";
 import { ProductResults } from "../components/ProductResults";
 import { useProductSearch } from "../hooks/useProductSearch";
+import styles from "../styles/SearchPage.module.css";
 
 export function SearchPage() {
   const [query, setQuery] = useState("");
   const { results, message, loading, error } = useProductSearch(query);
+  const backgroundImageUrl = "/fruktdisk-i-en-matbutik.jpg";
 
   return (
-    <div style={{ padding: 16, maxWidth: 520, margin: "0 auto" }}>
-      <h1>Find product in store</h1>
-
-      <SearchBar value={query} onChange={setQuery} />
-
-      <ProductResults
-        results={results}
-        loading={loading}
-        error={error}
-        message={message}
+    <div className={styles.page}>
+      <div
+        aria-hidden
+        className={styles.background}
+        style={{ backgroundImage: `url("${backgroundImageUrl}")` }}
       />
+      <div aria-hidden className={styles.overlay} />
+
+      <div className={styles.content}>
+        <h1 className={styles.title}>Search product</h1>
+
+        <SearchBar value={query} onChange={setQuery} />
+
+        <ProductResults
+          results={results}
+          loading={loading}
+          error={error}
+          message={message}
+        />
+      </div>
     </div>
   );
 }

@@ -1,3 +1,5 @@
+import styles from "../styles/SearchBar.module.css";
+
 type Props = {
   value: string;
   onChange: (value: string) => void;
@@ -5,18 +7,18 @@ type Props = {
 
 export function SearchBar({ value, onChange }: Props) {
   return (
-    <input
-      type="text"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder="Search product or brand..."
-      style={{
-        width: "100%",
-        padding: 12,
-        fontSize: 16,
-        boxSizing: "border-box",
-        marginBottom: 12,
-      }}
-    />
+    <div className={styles.wrapper}>
+      <span aria-hidden className={styles.icon}>
+        🔍
+      </span>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        aria-label="Search products or brands"
+        placeholder="Search product or brand..."
+        className={styles.input}
+      />
+    </div>
   );
 }

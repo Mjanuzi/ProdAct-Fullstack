@@ -1,4 +1,6 @@
 import type { ProductDto } from "../types/product";
+import { Link } from "react-router-dom";
+import styles from "../styles/ProductResults.module.css";
 
 type Props = {
   results: ProductDto[];
@@ -6,36 +8,33 @@ type Props = {
   error: string | null;
   message: string | null;
 };
-
 export function ProductResults({ results, loading, error, message }: Props) {
-  if (loading) return <p>Searching...</p>;
-  if (error) return <p style={{ color: "crimson" }}>{error}</p>;
-
+  if (loading) return <p className={styles.statusText}>Searching...</p>;
+  if (error) return <p className={styles.errorText}>{error}</p>;
   if (message && results.length === 0) {
-    return <p>{message}</p>;
+    return <p className={styles.statusText}>{message}</p>;
   }
-
   if (results.length > 0) {
     return (
-      <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+      <ul className={styles.list}>
         {results.map((p) => (
-          <li
-            key={p.id}
-            style={{
-              padding: 12,
-              border: "1px solid #ddd",
-              borderRadius: 10,
-              marginBottom: 10,
-            }}
-          >
-            <div style={{ fontWeight: 700 }}>{p.name}</div>
-            {p.brand && <div>{p.brand}</div>}
-            {p.category && <div>Category: {p.category.name}</div>}
+          <li key={p.id} className={styles.item}>
+            <Link to={`/products/${p.id}`} className={styles.link}>
+              {p.imageUrl ? (
+                <img src={p.imageUrl} alt={p.name} className={styles.image} />
+              ) : null}
+              <div className={styles.content}>
+                <div className={styles.name}>{p.name}</div>
+                {p.brand ? <div className={styles.brand}>{p.brand}</div> : null}
+                {p.category ? (
+                  <div className={styles.category}>Category: {p.category.name}</div>
+                ) : null}
+              </div>
+            </Link>
           </li>
         ))}
       </ul>
     );
   }
-
   return null;
 }

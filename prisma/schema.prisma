@@ -42,6 +42,7 @@ model Product {
   name        String
   brand       String?
   description String?
+  imageUrl    String? @db.Text
 
   //FK to Category
   categoryId Int?
