@@ -15,6 +15,7 @@ export function SearchBar({ value, onChange }: Props) {
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        aria-label="Search products or brands"
         placeholder="Search product or brand..."
         className={styles.input}
       />
