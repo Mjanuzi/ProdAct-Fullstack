@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getProductById } from "../api/products";
 import type { ProductDetailResponse } from "../types/product";
+import styles from "./ProductDetailPage.module.css";
 
 export function ProductDetailPage() {
   const { id } = useParams();
@@ -45,30 +46,23 @@ export function ProductDetailPage() {
   }, [numericId, invalidId]);
 
   if (invalidId) {
-    return <p style={{ color: "crimson" }}>Invalid product id.</p>;
+    return <p className={styles.error}>Invalid product id.</p>;
   }
 
   if (loading) return <p>Loading product...</p>;
-  if (error) return <p style={{ color: "crimson" }}>{error}</p>;
+  if (error) return <p className={styles.error}>{error}</p>;
   if (!product) return <p>Product not found.</p>;
 
   return (
-    <div style={{ padding: 16, maxWidth: 640, margin: "0 auto" }}>
-      <Link to="/">← Back to search</Link>
+    <div className={styles.container}>
+      <Link to="/" className={styles.backLink}>
+        ← Back to search
+      </Link>
 
       <h1>{product.name}</h1>
 
       {product.imageUrl ? (
-        <img
-          src={product.imageUrl}
-          alt={product.name}
-          style={{
-            width: "100%",
-            maxWidth: 320,
-            borderRadius: 8,
-            marginBottom: 12,
-          }}
-        />
+        <img src={product.imageUrl} alt={product.name} className={styles.image} />
       ) : null}
 
       <p>
