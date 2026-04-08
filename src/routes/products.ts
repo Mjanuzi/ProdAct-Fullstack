@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { prisma } from "../lib/prisma";
+import { fetchProductByEan } from "../services/OpenFoodFacts";
 
 export const productsRouter = Router();
 
@@ -90,6 +91,19 @@ productsRouter.get("/api/products/:id", async (req, res) => {
       return;
     }
 
+    // Backfill image URL for older products that were created before image support.
+    let imageUrl = product.imageUrl ?? null;
+    if (!imageUrl) {
+      const offProduct = await fetchProductByEan(product.ean);
+      if (offProduct?.imageUrl) {
+        imageUrl = offProduct.imageUrl;
+        await prisma.product.update({
+          where: { id: product.id },
+          data: { imageUrl },
+        });
+      }
+    }
+
     const formattedLocations = product.locations.map((location) => {
       const aisle = location.shelf.section.aisle.name;
       const section = location.shelf.section.name;
@@ -116,6 +130,7 @@ productsRouter.get("/api/products/:id", async (req, res) => {
       description: product.description,
       category: product.category?.name || null,
       openFoodFactsId: product.openFoodFactsId,
+      imageUrl,
       locations: formattedLocations,
       createdAt: product.createdAt,
       updatedAt: product.updatedAt,

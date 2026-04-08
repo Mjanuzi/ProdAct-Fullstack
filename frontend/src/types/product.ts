@@ -10,6 +10,7 @@ export interface ProductDto {
   brand: string | null;
   description: string | null;
   category: CategoryDto | null;
+  imageUrl?: string | null;
 }
 
 export interface ProductSearchResponse {

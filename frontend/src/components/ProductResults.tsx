@@ -33,6 +33,18 @@ export function ProductResults({ results, loading, error, message }: Props) {
                 display: "block",
               }}
             >
+              {p.imageUrl ? (
+                <img
+                  src={p.imageUrl}
+                  alt={p.name}
+                  style={{
+                    width: "100%",
+                    maxWidth: 120,
+                    borderRadius: 8,
+                    marginBottom: 8,
+                  }}
+                />
+              ) : null}
               <div style={{ fontWeight: 700 }}>{p.name}</div>
               {p.brand ? <div>{p.brand}</div> : null}
               {p.category ? <div>Category: {p.category.name}</div> : null}

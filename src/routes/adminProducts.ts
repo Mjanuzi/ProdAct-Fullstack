@@ -63,6 +63,7 @@ adminProductsRouter.post("/api/admin/products", requireAdmin, async (req, res) =
         name,
         brand,
         description,
+        imageUrl: offProduct.imageUrl || null,
         categoryId: category.id,
       },
     });
