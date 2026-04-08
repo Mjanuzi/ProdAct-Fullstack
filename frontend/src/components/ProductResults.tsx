@@ -30,7 +30,9 @@ export function ProductResults({ results, loading, error, message }: Props) {
               style={{
                 textDecoration: "none",
                 color: "inherit",
-                display: "block",
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
               }}
             >
               {p.imageUrl ? (
@@ -38,16 +40,19 @@ export function ProductResults({ results, loading, error, message }: Props) {
                   src={p.imageUrl}
                   alt={p.name}
                   style={{
-                    width: "100%",
-                    maxWidth: 120,
+                    width: 80,
+                    height: 80,
+                    objectFit: "cover",
+                    flexShrink: 0,
                     borderRadius: 8,
-                    marginBottom: 8,
                   }}
                 />
               ) : null}
-              <div style={{ fontWeight: 700 }}>{p.name}</div>
-              {p.brand ? <div>{p.brand}</div> : null}
-              {p.category ? <div>Category: {p.category.name}</div> : null}
+              <div>
+                <div style={{ fontWeight: 700 }}>{p.name}</div>
+                {p.brand ? <div>{p.brand}</div> : null}
+                {p.category ? <div>Category: {p.category.name}</div> : null}
+              </div>
             </Link>
           </li>
         ))}
