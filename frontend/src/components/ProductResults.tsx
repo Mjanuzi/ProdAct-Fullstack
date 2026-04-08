@@ -7,10 +7,10 @@ type Props = {
   message: string | null;
 };
 export function ProductResults({ results, loading, error, message }: Props) {
-  if (loading) return <p>Searching...</p>;
+  if (loading) return <p style={{ color: "#fff" }}>Searching...</p>;
   if (error) return <p style={{ color: "crimson" }}>{error}</p>;
   if (message && results.length === 0) {
-    return <p>{message}</p>;
+    return <p style={{ color: "#fff" }}>{message}</p>;
   }
   if (results.length > 0) {
     return (
@@ -20,9 +20,11 @@ export function ProductResults({ results, loading, error, message }: Props) {
             key={p.id}
             style={{
               padding: 12,
-              border: "1px solid #ddd",
-              borderRadius: 10,
-              marginBottom: 10,
+              border: "1px solid rgba(255, 255, 255, 0.7)",
+              borderRadius: 14,
+              marginBottom: 12,
+              background: "rgba(30, 30, 30, 0.72)",
+              backdropFilter: "blur(2px)",
             }}
           >
             <Link
@@ -48,10 +50,12 @@ export function ProductResults({ results, loading, error, message }: Props) {
                   }}
                 />
               ) : null}
-              <div>
+              <div style={{ color: "#fff" }}>
                 <div style={{ fontWeight: 700 }}>{p.name}</div>
-                {p.brand ? <div>{p.brand}</div> : null}
-                {p.category ? <div>Category: {p.category.name}</div> : null}
+                {p.brand ? <div style={{ opacity: 0.9 }}>{p.brand}</div> : null}
+                {p.category ? (
+                  <div style={{ opacity: 0.95 }}>Category: {p.category.name}</div>
+                ) : null}
               </div>
             </Link>
           </li>
