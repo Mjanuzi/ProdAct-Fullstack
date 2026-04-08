@@ -56,7 +56,7 @@ export function ProductDetailPage() {
   return (
     <div className={styles.container}>
       <Link to="/" className={styles.backLink}>
-        ← Back to search
+        ← Back
       </Link>
 
       <h1>{product.name}</h1>

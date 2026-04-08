@@ -5,7 +5,59 @@
 }
 
 .backLink {
-  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  position: sticky;
+  top: 14px;
+  z-index: 20;
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+  letter-spacing: 0.1px;
+  padding: 10px 16px;
+  margin-bottom: 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: linear-gradient(
+    135deg,
+    rgba(32, 32, 32, 0.88),
+    rgba(62, 62, 62, 0.82)
+  );
+  backdrop-filter: blur(8px);
+  box-shadow:
+    0 8px 22px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  transition:
+    background 120ms ease,
+    border-color 120ms ease,
+    transform 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.backLink:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(46, 46, 46, 0.94),
+    rgba(80, 80, 80, 0.9)
+  );
+  border-color: rgba(255, 255, 255, 0.75);
+  transform: translateY(-2px);
+  box-shadow:
+    0 12px 26px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.backLink:active {
+  transform: translateY(0);
+  box-shadow:
+    0 6px 14px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.backLink:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.95);
+  outline-offset: 3px;
 }
 
 .error {
