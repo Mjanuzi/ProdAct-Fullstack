@@ -82,9 +82,24 @@ export function ProductDetailPage() {
       {product.locations.length === 0 ? (
         <p>No placement registered.</p>
       ) : (
-        <ul>
+        <ul className={styles.placementList}>
           {product.locations.map((loc) => (
-            <li key={loc.id}>{loc.display}</li>
+            <li key={loc.id} className={styles.placementCard}>
+              <div className={styles.placementLine}>
+                <strong>Sektion:</strong> {loc.section}
+              </div>
+              <div className={styles.placementLine}>
+                <strong>Gång:</strong> {loc.aisle}
+              </div>
+              <div className={styles.placementLine}>
+                <strong>Hylla:</strong> {loc.shelfLevel}
+              </div>
+              {loc.position ? (
+                <div className={styles.placementLine}>
+                  <strong>Position:</strong> {loc.position}
+                </div>
+              ) : null}
+            </li>
           ))}
         </ul>
       )}

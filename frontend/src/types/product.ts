@@ -23,7 +23,7 @@ export interface ProductLocationDto {
   display: string;
   aisle: string;
   section: string;
-  shelfLevel: number;
+  shelfLevel: string | number;
   position: string | null;
 }
 

@@ -32,6 +32,11 @@ productsRouter.get("/api/products", async (req, res) => {
               mode: "insensitive",
             },
           },
+          {
+            ean: {
+              contains: searchQuery.trim(),
+            },
+          },
         ],
       },
       include: {
@@ -105,16 +110,16 @@ productsRouter.get("/api/products/:id", async (req, res) => {
     }
 
     const formattedLocations = product.locations.map((location) => {
-      const aisle = location.shelf.section.aisle.name;
-      const section = location.shelf.section.name;
-      const shelfLevel = location.shelf.level;
+      const aisle = location.aisleName ?? location.shelf?.section.aisle.name ?? "N/A";
+      const section = location.sectionName ?? location.shelf?.section.name ?? "N/A";
+      const shelfLevel = location.shelfLabel ?? (location.shelf ? `Hylla ${location.shelf.level}` : "N/A");
       const position =
         location.position != null ? `Position ${location.position}` : "";
       const positionDisplaySuffix = position ? ` ${position}` : "";
 
       return {
         id: location.id,
-        display: `${section} -> ${aisle} -> Hylla ${shelfLevel}${positionDisplaySuffix}`,
+        display: `${section} -> ${aisle} -> ${shelfLevel}${positionDisplaySuffix}`,
         aisle: aisle,
         section: section,
         shelfLevel: shelfLevel,

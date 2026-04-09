@@ -28,6 +28,22 @@
   width: 100%;
 }
 
+.topActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.adminLink {
+  display: inline-flex;
+  color: #fff;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  background: rgba(24, 24, 24, 0.72);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-weight: 600;
+}
+
 .title {
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
   text-align: center;

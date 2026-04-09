@@ -70,3 +70,21 @@
   border-radius: 8px;
   margin-bottom: 12px;
 }
+
+.placementList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.placementCard {
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(28, 28, 28, 0.7);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+
+.placementLine {
+  margin: 2px 0;
+}

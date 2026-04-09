@@ -3,6 +3,7 @@ import { SearchBar } from "../components/SearchBar";
 import { ProductResults } from "../components/ProductResults";
 import { useProductSearch } from "../hooks/useProductSearch";
 import styles from "../styles/SearchPage.module.css";
+import { Link } from "react-router-dom";
 
 export function SearchPage() {
   const [query, setQuery] = useState("");
@@ -19,6 +20,11 @@ export function SearchPage() {
       <div aria-hidden className={styles.overlay} />
 
       <div className={styles.content}>
+        <div className={styles.topActions}>
+          <Link to="/admin" className={styles.adminLink}>
+            Admin
+          </Link>
+        </div>
         <h1 className={styles.title}>Search product</h1>
 
         <SearchBar value={query} onChange={setQuery} />

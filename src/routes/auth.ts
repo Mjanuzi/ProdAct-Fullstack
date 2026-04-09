@@ -4,6 +4,30 @@ import { prisma } from "../lib/prisma";
 
 export const authRouter = Router();
 
+authRouter.get("/api/auth/me", async (req, res) => {
+  try {
+    const s = req.session as { userId?: number; role?: string };
+    if (!s.userId) {
+      res.status(401).json({ error: "Not logged in" });
+      return;
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: s.userId },
+      select: { id: true, email: true, role: true },
+    });
+    if (!user) {
+      res.status(401).json({ error: "Not logged in" });
+      return;
+    }
+
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 authRouter.post("/api/auth/login", async (req, res) => {
   try {
     const { email, password } = req.body as {

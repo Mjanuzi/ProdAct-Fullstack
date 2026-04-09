@@ -89,7 +89,8 @@ model Section {
 
 //---------Shelf-----------
 model Shelf {
-  id Int @id @default(autoincrement())
+  id   Int    @id @default(autoincrement())
+  name String
 
   //Fk to Section
   sectionId Int
@@ -112,8 +113,12 @@ model ProductLocation {
   product   Product @relation(fields: [productId], references: [id])
 
   //FK to shelf
-  shelfId Int
-  shelf   Shelf @relation(fields: [shelfId], references: [id])
+  shelfId Int?
+  shelf   Shelf? @relation(fields: [shelfId], references: [id])
+
+  aisleName  String?
+  sectionName String?
+  shelfLabel String?
 
   position Int?
 
